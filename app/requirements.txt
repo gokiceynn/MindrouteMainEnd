@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+python-multipart
+pymongo
+motor
+python-dotenv
+opencv-python-headless
+deepface
+mtcnn
+onnxruntime
+numpy
+Pillow
+tensorflow
+pydantic
+httpx
+pytest
+pytest-asyncio

@@ -1,0 +1,160 @@
+# app/fetch_places.py
+"""
+OSM (Overpass API) mekânlarını çekip MongoDB'ye kaydeder.
+
+Kullanım:
+  python fetch_places.py
+  python fetch_places.py --lat 41.015 --lon 28.979 --radius-km 4
+"""
+
+import os
+import argparse
+from datetime import datetime
+
+import requests
+from pymongo import MongoClient, ASCENDING
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# --- Config ---
+MONGO_URL = os.getenv("MONGO_URL", "mongodb://127.0.0.1:27017")
+DB_NAME = os.getenv("DB_NAME", "mindroute")
+COLL_NAME = os.getenv("COLL_NAME", "places")
+
+# Frontend/Backend ile uyumlu tip havuzu
+MOOD_MAP = {
+    "stresli": ["park", "garden", "forest", "viewpoint"],
+    "mutlu": ["cafe", "cinema", "pub", "bar", "restaurant", "fast_food"],
+    "durgun": ["museum", "library", "park"],
+    "enerjik": ["sports_centre", "stadium", "fitness_centre", "bar", "nightclub"],
+    "neutral": ["cafe", "park", "library", "museum"],
+}
+OSM_TYPES = sorted({t for v in MOOD_MAP.values() for t in v})
+
+DEFAULT_LAT = 41.015137   # İstanbul
+DEFAULT_LON = 28.979530
+DEFAULT_RADIUS_KM = 4
+
+OVERPASS_URL = "https://overpass-api.de/api/interpreter"
+HEADERS = {"User-Agent": "MindRoute/0.1 (+local dev)"}
+
+
+# --- Overpass sorgusu: amenity + leisure + tourism ---
+def overpass_query(lat: float, lon: float, radius_m: int) -> str:
+    amenity_regex = "|".join(OSM_TYPES)      # cafe, restaurant, library, museum, ...
+    leisure_regex = "park|garden|forest"     # park/garden/forest -> leisure
+    tourism_regex = "viewpoint|museum"       # viewpoint/museum -> tourism
+
+    q = f"""
+    [out:json][timeout:30];
+    (
+      node["amenity"~"^{amenity_regex}$"](around:{radius_m},{lat},{lon});
+      node["leisure"~"^{leisure_regex}$"](around:{radius_m},{lat},{lon});
+      node["tourism"~"^{tourism_regex}$"](around:{radius_m},{lat},{lon});
+    );
+    out body;
+    """
+    return q
+
+
+def fetch_from_overpass(lat: float, lon: float, radius_km: float):
+    radius_m = int(radius_km * 1000)
+    q = overpass_query(lat, lon, radius_m)
+    resp = requests.post(OVERPASS_URL, data={"data": q}, headers=HEADERS, timeout=60)
+    resp.raise_for_status()
+    data = resp.json()
+    return data.get("elements", [])
+
+
+# --- OSM node'u normalize et ---
+def normalize(node):
+    tags = node.get("tags", {}) or {}
+    # tür önceliği: amenity > leisure > tourism
+    t = tags.get("amenity") or tags.get("leisure") or tags.get("tourism")
+    return {
+        "source": "osm",
+        "osm_id": node.get("id"),
+        "type": t,  # park/garden/viewpoint artık gelebilir
+        "name": tags.get("name"),
+        "lat": node.get("lat"),
+        "lon": node.get("lon"),
+        "address": {
+            "city": tags.get("addr:city"),
+            "street": tags.get("addr:street"),
+            "housenumber": tags.get("addr:housenumber"),
+        },
+        "tags": tags,
+        "created_at": datetime.utcnow(),
+    }
+
+
+# --- İndeksler ---
+def ensure_indexes(coll):
+    try:
+        coll.drop_index("u_osm_id")
+    except Exception:
+        pass
+
+    coll.create_index([("osm_id", ASCENDING)], unique=True, name="u_osm_id")
+    coll.create_index([("type", ASCENDING)], name="i_type")
+
+# --- Seed örnekleri ---
+def seed_sample(coll):
+    docs = [
+        {"source":"seed","osm_id":-1,"type":"park","name":"Gülhane Parkı","lat":41.0127,"lon":28.9834,"tags":{},"created_at":datetime.utcnow()},
+        {"source":"seed","osm_id":-2,"type":"cafe","name":"Karaköy Kahvesi","lat":41.0229,"lon":28.9764,"tags":{},"created_at":datetime.utcnow()},
+        {"source":"seed","osm_id":-3,"type":"library","name":"Beyazıt Devlet Kütüphanesi","lat":41.0109,"lon":28.9647,"tags":{},"created_at":datetime.utcnow()},
+        {"source":"seed","osm_id":-4,"type":"sports_centre","name":"Beşiktaş Spor Salonu","lat":41.0416,"lon":29.0071,"tags":{},"created_at":datetime.utcnow()},
+    ]
+    for d in docs:
+        coll.update_one({"osm_id": d["osm_id"]}, {"$setOnInsert": d}, upsert=True)
+    return len(docs)
+
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--lat", type=float, default=DEFAULT_LAT)
+    parser.add_argument("--lon", type=float, default=DEFAULT_LON)
+    parser.add_argument("--radius-km", type=float, default=DEFAULT_RADIUS_KM)
+    args = parser.parse_args()
+
+    client = MongoClient(MONGO_URL, serverSelectionTimeoutMS=4000)
+    db = client[DB_NAME]
+    coll = db[COLL_NAME]
+    ensure_indexes(coll)
+
+    print(
+        f"→ Fetching OSM places around lat={args.lat}, lon={args.lon}, "
+        f"r={args.radius_km}km …"
+    )
+    try:
+        elements = fetch_from_overpass(args.lat, args.lon, args.radius_km)
+        print(f"→ Overpass returned {len(elements)} elements")
+
+        # normalize et ve yalnızca tip havuzunda olanları kaydet
+        batch = []
+        for n in elements:
+            doc = normalize(n)
+            if doc.get("type") in OSM_TYPES:
+                coll.update_one(
+                    {"osm_id": doc["osm_id"]},
+                    {"$setOnInsert": doc},
+                    upsert=True,
+                )
+                batch.append(doc)
+
+        print(f"→ Upserted {len(batch)} docs")
+    except Exception as e:
+        print(f"⚠️ Overpass fetch failed: {e}")
+        print("→ Seeding sample data …")
+        inserted = seed_sample(coll)
+        print(f"→ Seed inserted {inserted} docs")
+
+    total = coll.count_documents({})
+    print(f"✅ Total documents in '{DB_NAME}.{COLL_NAME}': {total}")
+
+
+if __name__ == "__main__":
+    main()
