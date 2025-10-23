@@ -79,11 +79,11 @@ async def close_mongo_connection():
 
 async def create_indexes():
     """Gerekli indeksleri oluştur"""
-    if not places_collection:
+    if places_collection is None:
         logger.warning("Places collection bulunamadı, bağlantı kuruluyor...")
         await connect_to_mongo()
     
-    if not places_collection:
+    if places_collection is None:
         logger.error("❌ Places collection hala bulunamadı!")
         raise Exception("Places collection bulunamadı")
     
