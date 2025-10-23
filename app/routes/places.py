@@ -54,7 +54,7 @@ async def search_places(
     
     try:
         places_collection = get_places_collection()
-        if not places_collection:
+        if places_collection is None:
             raise HTTPException(status_code=500, detail="Veritabanı bağlantısı kurulamadı")
         
         # MongoDB aggregate pipeline
