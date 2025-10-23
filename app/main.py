@@ -17,7 +17,7 @@ from collections import Counter
 
 # Yeni importlar
 from app.database import create_indexes, connect_to_mongo, close_mongo_connection
-from app.routes import places
+from app.routes import places, mood
 
 # .env yükle
 load_dotenv()
@@ -56,6 +56,7 @@ async def shutdown_event():
 
 # Router'ları dahil et
 app.include_router(places.router)
+app.include_router(mood.router)
 
 # 🔹 Duygu → mekan haritası (OSM field "type" ile eşleşir)
 MOOD_MAP = {
