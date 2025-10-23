@@ -1,7 +1,12 @@
 import pytest
 import httpx
+import sys
+from pathlib import Path
 from fastapi.testclient import TestClient
-from app.main import app
+
+# app modülünü path'e ekle
+sys.path.append(str(Path(__file__).parent.parent))
+from main import app
 
 client = TestClient(app)
 

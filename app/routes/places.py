@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query, HTTPException
 from typing import Dict, Any
-from app.database import get_places_collection
-from app.mood_map import get_mood_types, is_valid_mood
+from database import get_places_collection
+from mood_map import get_mood_types, is_valid_mood
 
 router = APIRouter(prefix="/places", tags=["Places"])
 

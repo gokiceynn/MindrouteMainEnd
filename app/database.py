@@ -1,12 +1,13 @@
 import os
 import logging
 from typing import Optional
+from pathlib import Path
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import ASCENDING
 from dotenv import load_dotenv
 
-# .env yükle
-load_dotenv()
+# app klasöründeki .env dosyasını yükle
+load_dotenv(dotenv_path=Path(__file__).resolve().parent / ".env")
 
 # Logging ayarla
 logging.basicConfig(level=logging.INFO)

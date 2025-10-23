@@ -1,7 +1,18 @@
+import os
+import sys
+from pathlib import Path
+from dotenv import load_dotenv
 from fastapi import FastAPI
-from app.routes import places
-from app.routes import mood
-from app.database import connect_to_mongo, create_indexes, close_mongo_connection
+
+# app modülünü path'e ekle
+sys.path.append(str(Path(__file__).parent))
+
+from routes import places
+from routes import mood
+from database import connect_to_mongo, create_indexes, close_mongo_connection
+
+# app klasöründeki .env dosyasını yükle
+load_dotenv(dotenv_path=Path(__file__).resolve().parent / ".env")
 
 app = FastAPI(title='MindRoute API', version='0.1.0')
 

@@ -6,8 +6,14 @@
 
 import asyncio
 import os
+import sys
+from pathlib import Path
 from dotenv import load_dotenv
-from app.database import connect_to_mongo, get_places_collection
+
+# app modülünü path'e ekle
+sys.path.append(str(Path(__file__).parent))
+
+from database import connect_to_mongo, get_places_collection
 
 # .env yükle
 load_dotenv()
@@ -96,7 +102,7 @@ async def seed_places():
         await connect_to_mongo()
         places_collection = get_places_collection()
         
-        if not places_collection:
+        if places_collection is None:
             print("❌ Veritabanı bağlantısı kurulamadı")
             return
         
@@ -120,7 +126,7 @@ async def seed_places():
         print(f"❌ Hata oluştu: {e}")
     finally:
         # Bağlantıyı kapat
-        from app.database import close_mongo_connection
+        from database import close_mongo_connection
         await close_mongo_connection()
 
 
