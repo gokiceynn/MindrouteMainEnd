@@ -1,12 +1,11 @@
 import asyncio
 from math import radians, cos, sin, asin, sqrt
-from fastapi import APIRouter, Query, HTTPException, Depends
+from fastapi import APIRouter, Query, HTTPException
 from typing import Dict, Any, List, Optional
 from app.database import get_places_collection
 from app.config import settings
 from app.models import PlaceItem, PlacesSearchResponse
 from app.services.places_enricher import get_nearby_places
-from app.services.foursquare_service import FoursquareClient, get_foursquare_client
 # Google Places API için import - circular import'u önlemek için lazy import kullanacağız
 
 router = APIRouter(prefix="/places", tags=["Places"])
@@ -126,6 +125,7 @@ async def search_places(
     - Ana veri kaynağı: Google Places API (güncel ve kapsamlı)
     - OSM: Sadece destekleyici kaynak (Google'da olmayan mekanlar için)
     - Mood sıralamayı etkiler, katı filtreleme yapmaz
+    - Foursquare entegrasyonu tamamen devre dışı
     """
     # Koordinat kontrolü
     if not (-90 <= lat <= 90):
@@ -136,9 +136,8 @@ async def search_places(
     try:
         radius_m = int(radius_km * 1000.0)
         
-        # Hibrit pipeline: OSM + Foursquare + Google kombinasyonu
+        # Hibrit pipeline: OSM + Google kombinasyonu
         # OSM: Geniş veri kaynağı (eski mekanlar)
-        # Foursquare: Rating ve fotoğraf zenginleştirme
         # Google: Güncel mekanlar ve detaylı bilgi
         items = await get_nearby_places(
             user_lat=lat,
@@ -167,34 +166,6 @@ async def search_places(
             status_code=500, 
             detail=f"Arama sırasında hata oluştu: {type(e).__name__}: {str(e)}"
         )
-
-
-@router.get("/debug/foursquare")
-async def debug_foursquare(
-    lat: float = Query(..., description="Enlem"),
-    lon: float = Query(..., description="Boylam"),
-    radius_km: float = Query(3.0, description="Arama yarıçapı (km)"),
-    client: FoursquareClient = Depends(get_foursquare_client),
-):
-    """
-    Foursquare Places API için ham (filtrelenmemiş) debug endpoint'i.
-    Foursquare'den gelen tüm sonuçları direkt döndürür.
-    """
-    radius_m = int(radius_km * 1000)
-    data = await client.search_raw(lat=lat, lon=lon, radius_m=radius_m)
-    return data
-
-
-@router.post("/debug/foursquare/reset-flag")
-async def reset_foursquare_flag():
-    """
-    Geriye dönük uyumluluk için bırakılmış stub endpoint.
-    Artık Foursquare için deprecated flag mekanizması kullanılmıyor.
-    """
-    return {
-        "message": "Foursquare deprecated flag mekanizması kaldırıldı, bu endpoint artık sadece stub olarak mevcut.",
-        "status": "noop",
-    }
 
 
 @router.post("/fetch-rich")

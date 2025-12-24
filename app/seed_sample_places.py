@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 # app modülünü path'e ekle
 sys.path.append(str(Path(__file__).parent))
 
-from database import connect_to_mongo, get_places_collection
+from app.database import connect_to_mongo, get_places_collection
 
 # .env yükle
 load_dotenv()

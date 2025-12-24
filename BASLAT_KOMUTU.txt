@@ -1,0 +1,24 @@
+=== BACKEND BAŞLATMA - DOĞRU KOMUT ===
+
+ŞU ANKI DURUMUNUZ: app dizininin içindesiniz
+ÇÖZÜM: Ana dizine çıkın!
+
+TERMINAL'DE ŞUNU YAZIN:
+
+cd ..
+
+SONRA:
+
+python -m uvicorn app.main:app --reload --port 8002 --host 127.0.0.1
+
+=== VEYA HEPİNİ BİRDEN ===
+
+cd .. && python -m uvicorn app.main:app --reload --port 8002 --host 127.0.0.1
+
+
+
+
+
+
+
+

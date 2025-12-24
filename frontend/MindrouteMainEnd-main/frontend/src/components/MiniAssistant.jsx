@@ -38,11 +38,16 @@ export default function MiniAssistant() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API}/mood/analyze/legacy`, {
+      const response = await fetch(`${API}/mood/text`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          text: trimmed,
+          message: trimmed,
+          history: historyForRequest.map(({ role, content }) => ({
+            role,
+            content,
+          })),
+          source: "mini-assistant",
         }),
       });
 

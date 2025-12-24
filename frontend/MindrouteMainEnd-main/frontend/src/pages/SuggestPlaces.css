@@ -1,0 +1,319 @@
+.suggest-bg {
+  position: fixed;
+  inset: 0;
+  background-image: url("/arkaplan3.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow-y: auto;
+  padding: 40px 0 80px;
+}
+
+/* Geri butonu */
+.back-btn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  width: 44px;
+  height: 44px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 10px;
+  font-size: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+/* Cam panel */
+.glass-panel {
+  width: 90%;
+  max-width: 500px;
+  margin: 80px auto 0;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  text-align: center;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.glass-panel h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.glass-panel label {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+/* Input */
+.glass-panel input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  margin: 10px 0 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.glass-panel input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.glass-panel input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Öneri butonu */
+.suggest-btn {
+  width: 100%;
+  padding: 14px;
+  background: #22c55e;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.suggest-btn:hover:not(:disabled) {
+  background: #16a34a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.suggest-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Mekan kartı */
+.place-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: left;
+}
+
+.place-card h3 {
+  font-size: 22px;
+  margin-bottom: 12px;
+  color: #ffecb3;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.place-card p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.place-card strong {
+  color: #e0ffea;
+}
+
+.place-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.btn-google {
+  flex: 1;
+  background: #4285F4;
+  padding: 10px 16px;
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-google:hover {
+  background: #357ae8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn-osm {
+  flex: 1;
+  background: #2ecc71;
+  padding: 10px 16px;
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-osm:hover {
+  background: #27ae60;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.next-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.next-btn:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.locWrap { width: 100%; display: flex; justify-content: center; }
+.locRow {
+  width: min(560px, 92%);
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  user-select: none;
+}
+.locRow.isDisabled { opacity: .6; cursor: not-allowed; }
+
+.locText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.locLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.92);
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+.locIcon { filter: drop-shadow(0 4px 10px rgba(0,0,0,.25)); }
+.locHint { color: rgba(255,255,255,0.68); font-size: 12px; }
+
+.locSwitch {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 54px;
+  height: 30px;
+  flex: 0 0 54px;
+}
+.locInput {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.locTrack {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.18);
+  transition: .22s ease;
+}
+
+.locKnob {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  transform: translateY(-50%);
+  z-index: 2;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,255,255,0.25));
+  box-shadow:
+    0 10px 18px rgba(0,0,0,0.28),
+    inset 0 0 0 1px rgba(255,255,255,0.25);
+  transition: .22s ease;
+  z-index: 2;
+}
+
+/* ON (zümrüt/konsept uyum) */
+.locSwitch.isOn .locTrack {
+  background: linear-gradient(135deg, rgba(34,197,94,0.95), rgba(16,185,129,0.9));
+  border: 1px solid rgba(255,215,140,0.42);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.18),
+    0 10px 22px rgba(16,185,129,0.28),
+    0 0 26px rgba(34,197,94,0.24);
+}
+.locSwitch.isOn .locKnob { left: 27px; }
+
+/* Focus */
+.locInput:focus-visible + .locTrack {
+  outline: 2px solid rgba(255,215,140,0.7);
+  outline-offset: 2px;
+}
+

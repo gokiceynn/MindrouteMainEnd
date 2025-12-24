@@ -1,0 +1,21 @@
+=== BACKEND BAŞLATMA ===
+
+ÖNCE ANA DİZİNE ÇIKIN:
+
+cd ~/OneDrive/Masaüstü/mindroute-main
+
+SONRA:
+
+python -m uvicorn app.main:app --reload --port 8002 --host 127.0.0.1
+
+=== VEYA KOPYALA-YAPIŞTIR ===
+
+cd ~/OneDrive/Masaüstü/mindroute-main && python -m uvicorn app.main:app --reload --port 8002 --host 127.0.0.1
+
+
+
+
+
+
+
+

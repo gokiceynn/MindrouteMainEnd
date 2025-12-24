@@ -90,23 +90,47 @@ async def create_indexes():
     try:
         logger.info("MongoDB indeksleri oluşturuluyor...")
         
+        # Mevcut indexleri kontrol et ve sil
+        existing_indexes = await places_collection.list_indexes().to_list(length=None)
+        for index in existing_indexes:
+            index_name = index.get("name", "")
+            if index_name in ["osm_id_1", "u_osm_id", "location_2dsphere", "type_1"]:
+                try:
+                    await places_collection.drop_index(index_name)
+                    logger.info(f"→ Mevcut index silindi: {index_name}")
+                except Exception as e:
+                    logger.warning(f"→ Index silinemedi {index_name}: {e}")
+        
         # osm_id üzerinde unique index
-        await places_collection.create_index("osm_id", unique=True)
-        logger.info("✅ osm_id unique index oluşturuldu")
+        try:
+            await places_collection.create_index("osm_id", unique=True, name="u_osm_id")
+            logger.info("✅ osm_id unique index oluşturuldu")
+        except Exception as e:
+            if "already exists" not in str(e):
+                logger.error(f"❌ osm_id index hatası: {e}")
         
         # location üzerinde 2dsphere index (GeoJSON için)
-        await places_collection.create_index([("location", "2dsphere")])
-        logger.info("✅ location 2dsphere index oluşturuldu")
+        try:
+            await places_collection.create_index([("location", "2dsphere")], name="location_2dsphere")
+            logger.info("✅ location 2dsphere index oluşturuldu")
+        except Exception as e:
+            if "already exists" not in str(e):
+                logger.error(f"❌ location index hatası: {e}")
         
         # type üzerinde normal index
-        await places_collection.create_index("type")
-        logger.info("✅ type index oluşturuldu")
+        try:
+            await places_collection.create_index("type", name="type_1")
+            logger.info("✅ type index oluşturuldu")
+        except Exception as e:
+            if "already exists" not in str(e):
+                logger.error(f"❌ type index hatası: {e}")
         
         logger.info("✅ Tüm indeksler başarıyla oluşturuldu")
         
     except Exception as e:
         logger.error(f"❌ Index oluşturma hatası: {e}")
-        raise
+        # Index hatası sunucuyu durdurmasın, sadece log'la
+        logger.warning("Sunucu index hatası ile devam ediyor...")
 
 
 def get_places_collection():

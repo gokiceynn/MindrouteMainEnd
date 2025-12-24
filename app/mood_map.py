@@ -4,7 +4,13 @@ MOOD_MAP = {
     "mutlu": ["cafe", "cinema", "pub", "restaurant", "fast_food", "bar"],
     "huzurlu": ["park", "garden", "viewpoint"],
     "yalnız": ["library", "museum", "art_gallery", "cafe"],
-    "enerjik": ["gym", "sports_centre", "stadium", "nightclub", "bar"]
+    "enerjik": ["gym", "sports_centre", "stadium", "nightclub", "bar"],
+    "nötr": ["cafe", "park", "library", "museum", "restaurant"],
+    "üzgün": ["cafe", "library", "museum", "park"],
+    "kızgın": ["park", "garden", "forest", "viewpoint"],
+    "şaşkın": ["cafe", "cinema", "museum", "restaurant"],
+    "korkmuş": ["cafe", "library", "park"],
+    "tiksinmiş": ["park", "garden", "viewpoint"]
 }
 
 
